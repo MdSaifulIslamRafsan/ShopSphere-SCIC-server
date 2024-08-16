@@ -29,10 +29,16 @@ async function run() {
 
 
     app.get("/products", async (req, res) => {
-      const result = await productCollection.find().toArray();
+      const size = parseInt(req.query.size);
+      const page = parseInt(req.query.page - 1);
+      const search = req.query.search;
+      const query = {
+        productName : {$regex : search , $options:'i'}
+      }
+      const result = await productCollection.find(query).skip(page * size).limit(size).toArray();
       res.send(result);
     });
-
+    
    
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
