@@ -27,6 +27,12 @@ async function run() {
     const database = client.db('ShopSphere-SCIC-Task');
     const productCollection = database.collection('product');
 
+
+    app.get("/product", async (req, res) => {
+      const result = await productCollection.find().toArray();
+      res.send(result);
+    });
+
    
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
