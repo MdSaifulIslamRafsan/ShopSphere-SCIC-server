@@ -28,7 +28,7 @@ async function run() {
     const productCollection = database.collection('product');
 
 
-    app.get("/product", async (req, res) => {
+    app.get("/products", async (req, res) => {
       const result = await productCollection.find().toArray();
       res.send(result);
     });
