@@ -33,11 +33,17 @@ async function run() {
       const { order } = req.query;
       const search = req.query.search || "";
       const category = req.query.category;
+      const brand = req.query.brand;
+      console.log(brand);
+      
       const { minPrice, maxPrice } = req.query;
 
       const query = {
         productName: { $regex: search, $options: "i" },
       };
+      if (brand) {
+        query.brand = { $regex: brand, $options: "i" };
+      }
       if (minPrice && maxPrice) {
         query.price = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) };
       }
