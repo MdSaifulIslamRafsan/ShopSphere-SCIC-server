@@ -34,7 +34,6 @@ async function run() {
       const search = req.query.search || "";
       const category = req.query.category;
       const brand = req.query.brand;
-      console.log(brand);
       
       const { minPrice, maxPrice } = req.query;
 
@@ -71,6 +70,7 @@ async function run() {
       const search = req.query.search;
       const category = req.query.category;
       const { minPrice, maxPrice } = req.query;
+      const brand = req.query.brand;
       const query = {
         productName: { $regex: search, $options: "i" },
       };
@@ -79,6 +79,9 @@ async function run() {
       }
       if (category) {
         query.category = category;
+      }
+      if (brand) {
+        query.brand = { $regex: brand, $options: "i" };
       }
       const count = await productCollection.countDocuments(query);
       res.send({ count });
