@@ -31,11 +31,17 @@ async function run() {
     app.get("/products", async (req, res) => {
       const size = parseInt(req.query.size);
       const page = parseInt(req.query.page - 1);
+      
       const search = req.query.search || '';
       const category = req.query.category;
+      const { minPrice, maxPrice} = req.query;
+      
       
       const query = {
         productName : {$regex : search , $options:'i'}
+      }
+      if (minPrice && maxPrice) {
+        query.price = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) };
       }
       if(category){
         query.category = category
@@ -46,8 +52,16 @@ async function run() {
     
    app.get("/products-count", async (req, res) => {
       const search = req.query.search;
+      const category = req.query.category;
+      const { minPrice, maxPrice} = req.query;
       const query = {
         productName : {$regex : search , $options:'i'}
+      }
+      if (minPrice && maxPrice) {
+        query.price = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) };
+      }
+      if(category){
+        query.category = category
       }
       const count = await productCollection.countDocuments(query);
       res.send({count});
