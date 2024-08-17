@@ -24,47 +24,58 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
-    const database = client.db('ShopSphere-SCIC-Task');
-    const productCollection = database.collection('product');
-
+    const database = client.db("ShopSphere-SCIC-Task");
+    const productCollection = database.collection("product");
 
     app.get("/products", async (req, res) => {
       const size = parseInt(req.query.size);
       const page = parseInt(req.query.page - 1);
-      
-      const search = req.query.search || '';
+      const { order } = req.query;
+      const search = req.query.search || "";
       const category = req.query.category;
-      const { minPrice, maxPrice} = req.query;
-      
-      
+      const { minPrice, maxPrice } = req.query;
+
       const query = {
-        productName : {$regex : search , $options:'i'}
-      }
+        productName: { $regex: search, $options: "i" },
+      };
       if (minPrice && maxPrice) {
         query.price = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) };
       }
-      if(category){
-        query.category = category
+      if (category) {
+        query.category = category;
       }
-      const result = await productCollection.find(query).skip(page * size).limit(size).toArray();
+      let sortOrder = {};
+      if (order === "Low to High") {
+        sortOrder = { price: 1 };
+      } else if (order === "High to Low") {
+        sortOrder = { price: -1 };
+      } else if (order === "Newest First") {
+        sortOrder = { creationDate: -1 };
+      }
+      const result = await productCollection
+        .find(query)
+        .sort(sortOrder)
+        .skip(page * size)
+        .limit(size)
+        .toArray();
       res.send(result);
     });
-    
-   app.get("/products-count", async (req, res) => {
+
+    app.get("/products-count", async (req, res) => {
       const search = req.query.search;
       const category = req.query.category;
-      const { minPrice, maxPrice} = req.query;
+      const { minPrice, maxPrice } = req.query;
       const query = {
-        productName : {$regex : search , $options:'i'}
-      }
+        productName: { $regex: search, $options: "i" },
+      };
       if (minPrice && maxPrice) {
         query.price = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) };
       }
-      if(category){
-        query.category = category
+      if (category) {
+        query.category = category;
       }
       const count = await productCollection.countDocuments(query);
-      res.send({count});
+      res.send({ count });
     });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
