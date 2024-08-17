@@ -31,15 +31,20 @@ async function run() {
     app.get("/products", async (req, res) => {
       const size = parseInt(req.query.size);
       const page = parseInt(req.query.page - 1);
-      const search = req.query.search;
+      const search = req.query.search || '';
+      const category = req.query.category;
+      
       const query = {
         productName : {$regex : search , $options:'i'}
+      }
+      if(category){
+        query.category = category
       }
       const result = await productCollection.find(query).skip(page * size).limit(size).toArray();
       res.send(result);
     });
     
-    app.get("/products-count", async (req, res) => {
+   app.get("/products-count", async (req, res) => {
       const search = req.query.search;
       const query = {
         productName : {$regex : search , $options:'i'}
