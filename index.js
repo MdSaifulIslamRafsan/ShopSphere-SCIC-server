@@ -5,7 +5,15 @@ const cors = require("cors");
 const port = process.env.PORT || 3000;
 
 // middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "shopsphere-scic-client.web.app",
+      "shopsphere-scic-client.firebaseapp.com",
+    ],
+  })
+);
 app.use(express.json());
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
@@ -34,7 +42,7 @@ async function run() {
       const search = req.query.search || "";
       const category = req.query.category;
       const brand = req.query.brand;
-      
+
       const { minPrice, maxPrice } = req.query;
 
       const query = {
