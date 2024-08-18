@@ -6,13 +6,11 @@ const port = process.env.PORT || 3000;
 
 // middleware
 app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "shopsphere-scic-client.web.app",
-      "shopsphere-scic-client.firebaseapp.com",
-    ],
-  })
+  cors([
+    "http://localhost:5173",
+    "http://shopsphere-scic-client.web.app",
+    "http://shopsphere-scic-client.firebaseapp.com",
+  ])
 );
 app.use(express.json());
 
